@@ -1,0 +1,31 @@
+id: admin-process-bonus-001
+title: HR Admin distributes a project-based or festival bonus
+role: hr_admin
+priority: P2
+related_pages:
+  - admin/31-bonus-management.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/bonuses
+    when: they click "Process Bonus", pick type=Project, select employees, enter amount per employee, and submit
+    then: bonus records are created and scheduled (either "Add to payroll" or "Immediate")
+  - id: AC-2
+    given: the bonus type is Festival
+    when: the form is open
+    then: a single amount applies to all selected employees
+  - id: AC-3
+    given: "Add to payroll" is chosen
+    when: next payroll runs
+    then: the bonus appears as a line item for each employee
+  - id: AC-4
+    given: past bonuses exist
+    when: filters type=Festival and year=current
+    then: only festival bonuses for the current year are listed
+boundary_cases:
+  - Amount = 0 is rejected
+  - Selecting 0 employees disables submit
+  - Very large amount triggers a confirmation dialog
+error_scenarios:
+  - Server 500 -> form preserved, retry available
+  - Concurrent payroll finalization -> 409, user prompted to choose immediate-only mode
+  - Unauthorized -> 403

@@ -1,0 +1,35 @@
+id: admin-export-report-001
+title: HR Admin exports reports in Excel or PDF with date range
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/38-reports-export.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/reports
+    when: they select "Attendance Report", date range, format=Excel and click Export
+    then: an .xlsx is downloaded with columns per PRD (source breakdown included)
+  - id: AC-2
+    given: the user picks "Emergency Leave Report"
+    when: the report is generated
+    then: the Excel includes Slack notification status per row
+  - id: AC-3
+    given: the user picks "Payroll Report" for a specific month
+    when: the PDF is generated
+    then: the PDF includes summary totals (basic, allowances, deductions, bonus, net)
+  - id: AC-4
+    given: the user picks "Performance Report"
+    when: the report is generated
+    then: it includes ratings, goals completion, daily notes submission, and project evaluations
+  - id: AC-5
+    given: no data exists for the selected range
+    when: the user exports
+    then: an empty file with headers is produced (not an error)
+boundary_cases:
+  - Date range beyond 12 months shows a warning "Large export may take time"
+  - Custom filters (department, role, status) are honored in exported data
+  - Generated files respect timezone of admin user
+error_scenarios:
+  - Export times out -> toast + background job fallback
+  - Server 500 -> retry button
+  - Unauthorized -> 403

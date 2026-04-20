@@ -1,0 +1,32 @@
+id: admin-delete-employee-001
+title: HR Admin soft-deletes (deactivates) an employee
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/24-employee-management-list.html
+  - admin/44-employee-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is viewing an employee detail
+    when: they click Delete and confirm the dialog
+    then: the employee is soft-deleted (deletedAt set), removed from active lists
+  - id: AC-2
+    given: the list is shown
+    when: the user selects multiple rows and clicks Bulk Delete
+    then: all selected rows are soft-deleted after a confirmation dialog
+  - id: AC-3
+    given: an employee is soft-deleted
+    when: their auth-cookie hits a protected endpoint
+    then: server returns 401 and frontend logs them out
+  - id: AC-4
+    given: an employee has an active loan with outstanding balance
+    when: HR attempts to delete
+    then: the system warns and requires HR to clear the loan first
+boundary_cases:
+  - Deleting a team_leader who has reports requires re-assigning reports first
+  - Restoring a soft-deleted user is available in a "Deleted" filter view
+  - Delete action requires typing the full name to confirm (safety pattern)
+error_scenarios:
+  - Cascade failure (loan, payroll conflict) -> 409 with list of blockers
+  - Server 500 -> toast, row not removed from list
+  - Unauthorized -> 403

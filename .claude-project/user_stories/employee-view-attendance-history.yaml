@@ -1,0 +1,36 @@
+id: employee-view-attendance-history-001
+title: Employee views their attendance history in calendar and list view
+role: employee
+priority: P1
+related_pages:
+  - employee/07-attendance-history.html
+  - employee/41-attendance-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee has clocked in for multiple days
+    when: they open /employee/attendance/history
+    then: a calendar view renders with day cells colored by status (on_time / late / absent)
+  - id: AC-2
+    given: the history page is loaded
+    when: the user switches to List view
+    then: a paginated table shows date, clock-in time, status, source (Gather/Manual)
+  - id: AC-3
+    given: the list is loaded
+    when: the user filters by month and source=Manual
+    then: only manual clock-ins in that month are shown
+  - id: AC-4
+    given: the user clicks a row
+    when: the action fires
+    then: /employee/attendance/:id is opened with full detail
+  - id: AC-5
+    given: no attendance exists for the selected month
+    when: the user views the list
+    then: an empty state "No attendance recorded" is shown
+boundary_cases:
+  - Date range spanning year boundary (Dec 28 -> Jan 5) works correctly
+  - Future dates are disabled in the filter
+  - Large result sets are paginated (10/25/50/100 per page)
+error_scenarios:
+  - Fetch fails -> error state with retry
+  - Invalid filter values coerced to defaults
+  - Session expired -> refresh interceptor retries once then redirects

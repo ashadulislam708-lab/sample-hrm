@@ -1,0 +1,36 @@
+id: employee-clock-in-manual-001
+title: Employee manually clocks in with a reason
+role: employee
+priority: P0
+related_pages:
+  - employee/06-attendance-main.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/attendance and has not yet clocked in today
+    when: they click "Manual Clock-In", provide a reason, and confirm
+    then: an attendance record is created for today with source=manual, the button swaps to "Clocked in at HH:MM"
+  - id: AC-2
+    given: the clock-in time is before office_start + grace_period
+    when: the record is displayed
+    then: status shows "On Time" (green)
+  - id: AC-3
+    given: the clock-in time is after office_start + grace_period
+    when: the record is displayed
+    then: status shows "Late" (red) AND a "Submit Late Approval Request" CTA appears
+  - id: AC-4
+    given: the employee has already clocked in today (manual or Gather)
+    when: they visit the Attendance page
+    then: Manual Clock-In button is hidden and today's record is shown instead
+  - id: AC-5
+    given: the modal is open
+    when: the user clicks Cancel
+    then: no API call is made and the modal closes
+boundary_cases:
+  - Reason text at 500 chars is accepted
+  - Reason with only whitespace is rejected with validation
+  - Clocking in exactly at office_start + grace_period is on-time (boundary inclusive)
+  - Clocking in on a weekend is recorded as special weekend work with note
+error_scenarios:
+  - Duplicate clock-in attempt same day -> 409 Conflict, toast "Already clocked in"
+  - Server 500 -> toast + form preserves reason
+  - Network failure mid-submit -> action is retryable, no double-write

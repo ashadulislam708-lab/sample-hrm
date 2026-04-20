@@ -1,0 +1,31 @@
+id: team-leader-approve-shift-001
+title: Team Leader approves or rejects a Work Day Shift request
+role: team_leader
+priority: P2
+related_pages:
+  - team/20-team-approvals.html
+  - team/43-approval-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader is on /team/approvals with filter=Shift
+    when: they approve a shift request
+    then: the request status becomes approved and the member's work_days setting is scheduled
+  - id: AC-2
+    given: a team_leader rejects a shift request
+    when: submit is confirmed with reason
+    then: status becomes rejected and member is notified
+  - id: AC-3
+    given: the approver views the request detail
+    when: it renders
+    then: justification, requested start date, and current shift are all visible
+  - id: AC-4
+    given: HR Admin has already overridden a request
+    when: team_leader views it
+    then: it is read-only with an "Overridden by HR" badge
+boundary_cases:
+  - Approved shift taking effect in the future shows a "Starts on YYYY-MM-DD" label
+  - Attempting approve on already-approved -> disabled with tooltip
+error_scenarios:
+  - Concurrent HR override -> 409, UI refreshes
+  - Server 500 -> toast + retry
+  - Unauthorized -> 403

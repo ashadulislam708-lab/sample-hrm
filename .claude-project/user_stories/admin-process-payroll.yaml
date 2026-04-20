@@ -1,0 +1,37 @@
+id: admin-process-payroll-001
+title: HR Admin generates, reviews, and approves monthly payroll
+role: hr_admin
+priority: P0
+related_pages:
+  - admin/29-payroll-management.html
+  - admin/30-salary-configuration.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/payroll
+    when: they select a month and click "Generate Payroll"
+    then: payroll items are created for all active employees with basic, allowances, loan deductions, bonuses, and net
+  - id: AC-2
+    given: a payroll run is in review state
+    when: the user spot-checks items and clicks Approve
+    then: the run is finalized and employees can view their payslips
+  - id: AC-3
+    given: a payroll run is finalized
+    when: the user clicks "Download Bank File"
+    then: a bank-format .xlsx/.csv is downloaded
+  - id: AC-4
+    given: the run is in review
+    when: salary config is updated mid-run
+    then: the user can click "Regenerate" to recalculate items
+  - id: AC-5
+    given: an employee has an active loan
+    when: the run is generated
+    then: that month's installment is deducted and loan outstanding decreases
+boundary_cases:
+  - Generating a run for a month already finalized is blocked
+  - Running for a month with 0 active employees is blocked with warning
+  - Negative net pay (loan + deductions > salary) triggers a warning per item
+  - Exactly-zero bonuses omit the bonus line from payslip
+error_scenarios:
+  - Generation fails mid-way -> run is rolled back, retry available
+  - Concurrent run by another admin -> 409, UI refreshes
+  - Server 500 during approve -> status remains in review, retry possible

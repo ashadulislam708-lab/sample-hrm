@@ -1,0 +1,31 @@
+id: employee-apply-half-day-leave-001
+title: Employee applies for a half-day leave (2nd half only)
+role: employee
+priority: P1
+related_pages:
+  - employee/10-apply-leave.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/leave/apply
+    when: they select duration=Half Day, date=today, reason, and submit
+    then: a leave request with type=half_day is created covering the 2nd-half only
+  - id: AC-2
+    given: the half-day form is shown
+    when: it is rendered
+    then: a note states "Half-Day Leave requires core hours (8:00 - 13:00) completion"
+  - id: AC-3
+    given: the employee has not clocked in before core hours end
+    when: they try to submit half-day for today
+    then: server rejects with "Core hours must be completed before half-day leave"
+  - id: AC-4
+    given: half-day leave is approved
+    when: attendance is calculated for that day
+    then: the day is counted as 0.5 present + 0.5 leave (not absent)
+boundary_cases:
+  - Half day can only be applied for a single date (not a range)
+  - 1st-half option is not shown (per PRD only 2nd half)
+  - Submitting half-day after already submitting full-day same day is rejected
+error_scenarios:
+  - Clock-in missing for that day -> 422 with clear message
+  - Insufficient balance -> 422 "Insufficient leave balance (half day uses 0.5)"
+  - Server 500 -> toast + retry

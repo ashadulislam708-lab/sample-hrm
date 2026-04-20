@@ -1,0 +1,32 @@
+id: employee-apply-work-day-shift-001
+title: Employee applies for Fri-Sun work day shift
+role: employee
+priority: P2
+related_pages:
+  - employee/57-shift-change.html
+  - employee/18-profile.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/profile/shift
+    when: they click "Apply for Friday-Sunday Shift", provide justification, and submit
+    then: a shift-change request is created with status=pending
+  - id: AC-2
+    given: the form is open
+    when: reason is empty or < 10 chars
+    then: inline validation prevents submission
+  - id: AC-3
+    given: a shift request is approved by Team Leader
+    when: the approval is saved
+    then: the employee's work_days setting is updated to the alt shift and future attendance calculations honor it
+  - id: AC-4
+    given: HR Admin overrides a pending request
+    when: override is saved
+    then: status becomes approved regardless of TL decision
+boundary_cases:
+  - Applying while already on alt shift is rejected (already active)
+  - Future start date more than 30 days out requires HR approval flag
+  - One active request at a time per employee
+error_scenarios:
+  - Server 422 -> inline errors
+  - Session expired -> redirect to /login, then form restored if draft was saved
+  - Concurrent update -> 409 with refresh hint

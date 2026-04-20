@@ -1,0 +1,37 @@
+id: employee-view-payslip-001
+title: Employee views payslips and downloads PDF
+role: employee
+priority: P1
+related_pages:
+  - employee/12-salary-main.html
+  - employee/13-payslip-detail.html
+  - employee/58-salary-breakdown.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee has at least one finalized payroll item
+    when: they open /employee/salary
+    then: current month's summary (basic, allowances, deductions, bonus, net) is shown
+  - id: AC-2
+    given: prior payslips exist
+    when: the user views payslip history
+    then: a table of months with "Download PDF" buttons is rendered
+  - id: AC-3
+    given: the user clicks Download PDF on a payslip
+    when: the action fires
+    then: a PDF file is downloaded containing employer info, breakdown, and net pay
+  - id: AC-4
+    given: bonuses exist for the year
+    when: the user views the Bonus History panel
+    then: project-based and festival bonuses are listed with date and amount
+  - id: AC-5
+    given: the employee is a new hire with no payslip yet
+    when: the page loads
+    then: an empty state "No payslips yet" is shown (no error)
+boundary_cases:
+  - Zero allowances or deductions render "-" in the cell
+  - Very large net pay formats with comma separators
+  - Negative net pay (over-deduction) shows a warning banner
+error_scenarios:
+  - PDF generation fails -> toast + retry
+  - Accessing another employee's payslip id -> 403
+  - Session expired during download -> re-auth triggers then resumes

@@ -1,0 +1,37 @@
+id: employee-apply-emergency-leave-001
+title: Employee applies emergency leave, Slack notification is posted
+role: employee
+priority: P0
+related_pages:
+  - employee/11-apply-emergency-leave.html
+  - employee/09-leave-main.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/leave/emergency
+    when: they provide reason, estimated return time (required), contact info (optional), and submit
+    then: an emergency leave request is created with status=pending and a Slack message is posted to the configured channel
+  - id: AC-2
+    given: the emergency leave form is open
+    when: it is rendered
+    then: a banner reads "Submitting will notify the team via Slack"
+  - id: AC-3
+    given: the form is open
+    when: estimated return time is missing
+    then: inline validation prevents submission
+  - id: AC-4
+    given: the form is open
+    when: estimated return time is earlier than now
+    then: validation rejects "Return time must be in the future"
+  - id: AC-5
+    given: a submission succeeds but Slack webhook fails
+    when: the response returns
+    then: leave is still recorded; UI shows warning "Slack notification failed (admin notified)"
+boundary_cases:
+  - Estimated return within 1 hour is accepted
+  - Estimated return up to 5 days in the future is accepted (policy max)
+  - Reason at 1000 chars accepted, longer rejected
+  - Submission on weekend or holiday is allowed
+error_scenarios:
+  - Slack integration disabled -> request succeeds without posting, no warning
+  - Network failure mid-submit -> retry available; idempotency key prevents duplicate
+  - Unauthorized -> redirect to /login

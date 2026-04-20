@@ -1,0 +1,35 @@
+id: admin-attendance-management-001
+title: HR Admin reviews attendance, approves late requests, and exports
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/26-attendance-management.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/attendance
+    when: they filter by department=Engineering and date=today
+    then: a filtered list with clock-in times, source (Gather/Manual), and status is shown
+  - id: AC-2
+    given: the page is open
+    when: the user switches to "Late Approvals" tab
+    then: pending late-attendance requests are listed with Approve/Reject buttons
+  - id: AC-3
+    given: the user selects rows
+    when: they click "Export Excel"
+    then: an .xlsx with currently filtered results is downloaded
+  - id: AC-4
+    given: an attendance record has a data issue
+    when: HR Admin clicks Edit and updates the clock-in time with a correction note
+    then: the record is updated and audit-log captures the change
+  - id: AC-5
+    given: the summary stats area is visible
+    when: the page loads
+    then: Totals for Present, Late, Absent, Gather, Manual are displayed
+boundary_cases:
+  - Date filter with end < start is rejected with message
+  - Filtering by source=Gather shows zero manual entries
+  - Editing a record older than 30 days requires an elevated confirm
+error_scenarios:
+  - Export timeout -> toast + retry
+  - Concurrent edit -> 409
+  - Unauthorized -> 403

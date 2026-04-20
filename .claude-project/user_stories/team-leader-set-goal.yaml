@@ -1,0 +1,32 @@
+id: team-leader-set-goal-001
+title: Team Leader sets a goal for a team member
+role: team_leader
+priority: P1
+related_pages:
+  - team/21-team-performance.html
+  - employee/51-goal-create-edit.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader is on /team/performance
+    when: they click "Assign Goal", pick a member, enter title, description, target date, and save
+    then: a goal is created with owner=member and assigned_by=team_leader
+  - id: AC-2
+    given: a goal exists
+    when: the team_leader edits its description or target date
+    then: the update is saved and member is notified
+  - id: AC-3
+    given: a goal exists
+    when: the team_leader deletes it
+    then: a confirmation dialog appears; after confirm, the goal is soft-deleted
+  - id: AC-4
+    given: the assign-goal form is open
+    when: target date is in the past
+    then: validation blocks submission
+boundary_cases:
+  - Target date = today is allowed
+  - Assigning a goal to non-team member is blocked (403 server side)
+  - Title up to 200 chars accepted; longer truncated
+error_scenarios:
+  - Server 422 -> inline validation
+  - Concurrent edit by HR -> 409, refresh prompt
+  - Unauthorized -> 403

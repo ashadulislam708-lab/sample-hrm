@@ -1,0 +1,37 @@
+id: team-leader-approve-leave-001
+title: Team Leader approves or rejects a team member's leave request
+role: team_leader
+priority: P0
+related_pages:
+  - team/20-team-approvals.html
+  - team/43-approval-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader is on /team/approvals with pending leave requests
+    when: they open a request and click Approve with optional comment
+    then: the request status becomes approved and the employee receives a notification
+  - id: AC-2
+    given: a team_leader is on /team/approvals
+    when: they open a request and click Reject with a required reason
+    then: the request status becomes rejected and the employee is notified
+  - id: AC-3
+    given: the approvals list is rendered
+    when: emergency leave items exist
+    then: they appear at the top with a highlighted badge
+  - id: AC-4
+    given: a request was already decided
+    when: the team_leader tries to approve again
+    then: UI shows "Already decided" and action is disabled
+  - id: AC-5
+    given: the Approval History tab is opened
+    when: it renders
+    then: a paginated list of past decisions is displayed with filters
+boundary_cases:
+  - Reject without comment is blocked (comment required for reject)
+  - Approve with empty comment is allowed
+  - Bulk approve is not supported at this iteration (single-action only)
+  - Filter by employee name returns matching subset
+error_scenarios:
+  - Another approver decided concurrently -> 409, UI refreshes the item
+  - Server 500 -> toast + retry; row is not mutated
+  - Unauthorized (foreign team request) -> 403, row hidden

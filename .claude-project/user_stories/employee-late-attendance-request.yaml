@@ -1,0 +1,36 @@
+id: employee-late-attendance-request-001
+title: Employee submits a late-attendance approval request
+role: employee
+priority: P1
+related_pages:
+  - employee/08-late-attendance-request.html
+  - employee/06-attendance-main.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee clocked in after the grace period
+    when: they open /employee/attendance/late-request and submit a reason and supporting info
+    then: a late-attendance request is created with status=pending and appears in their request list
+  - id: AC-2
+    given: a pending request exists
+    when: the approver approves it
+    then: the employee sees status=approved on next load and the attendance record reflects approval
+  - id: AC-3
+    given: a pending request exists
+    when: the employee cancels before approval
+    then: the request status becomes cancelled
+  - id: AC-4
+    given: the form is rendered
+    when: the employee submits with reason under 10 characters
+    then: validation requires a more detailed reason
+  - id: AC-5
+    given: there is already a pending request for today
+    when: the employee tries to submit another
+    then: server rejects with 409 and UI shows "Only one pending request per day"
+boundary_cases:
+  - Reason exactly at 500 chars accepted
+  - Multiple late days each require separate requests
+  - Late by 1 minute still requires a request (grace enforced strictly)
+error_scenarios:
+  - Submit after approver already resolved the attendance -> 409, UI refreshes status
+  - Server 500 -> form preserved, retry available
+  - Unauthenticated -> redirect to /login

@@ -1,0 +1,35 @@
+id: admin-manage-policy-001
+title: HR Admin creates, edits, publishes, and tracks policy acknowledgments
+role: hr_admin
+priority: P2
+related_pages:
+  - admin/35-policy-management.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/policies
+    when: they click "Create Policy", enter title, category, rich-text content, and save as draft
+    then: a new policy record is created with status=draft
+  - id: AC-2
+    given: a draft policy exists
+    when: HR clicks Publish
+    then: status becomes active and employees see it in their Policies tab
+  - id: AC-3
+    given: a published policy is opened
+    when: HR views "Acknowledgments"
+    then: a per-user status list shows acknowledged / pending
+  - id: AC-4
+    given: users haven't acknowledged
+    when: HR clicks "Send Reminder"
+    then: email reminders are queued and UI shows a success toast
+  - id: AC-5
+    given: a policy is outdated
+    when: HR archives it
+    then: status=archived, removed from active employee list but kept in history
+boundary_cases:
+  - Draft can be edited freely; published policy requires a new version bump on edit
+  - Rich-text content over 50k chars is accepted with warning
+  - HTML input is sanitized to prevent XSS
+error_scenarios:
+  - Save fails due to validation -> inline errors
+  - Publish fails -> status stays draft, toast shown
+  - Unauthorized -> 403

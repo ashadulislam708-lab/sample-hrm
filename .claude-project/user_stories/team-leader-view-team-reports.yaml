@@ -1,0 +1,31 @@
+id: team-leader-view-team-reports-001
+title: Team Leader views team reports and exports
+role: team_leader
+priority: P2
+related_pages:
+  - team/22-team-reports.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader is on /team/reports
+    when: they select "Attendance" and date range
+    then: a summary chart + table of team attendance (including Gather vs Manual) is shown
+  - id: AC-2
+    given: the report is rendered
+    when: user clicks "Export Excel"
+    then: an .xlsx is downloaded with current filters applied
+  - id: AC-3
+    given: the user switches to "Daily Notes Completion"
+    when: the report loads
+    then: per-member submission % for the chosen period is shown
+  - id: AC-4
+    given: Leave summary is selected
+    when: filter by type=Emergency is applied
+    then: only emergency-leave rows are shown with Slack status column
+boundary_cases:
+  - Date range = single day supported
+  - Exporting zero-row results still produces a file with headers
+  - Extremely long team name truncates with tooltip
+error_scenarios:
+  - Export job fails -> toast + retry
+  - Notion down -> daily-notes report shows partial data with warning banner
+  - Unauthorized -> redirect to role home

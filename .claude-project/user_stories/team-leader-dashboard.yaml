@@ -1,0 +1,36 @@
+id: team-leader-dashboard-001
+title: Team Leader views team overview with Gather presence and approvals
+role: team_leader
+priority: P0
+related_pages:
+  - team/19-team-dashboard.html
+  - team/42-team-member-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader is authenticated with 5 reports
+    when: they navigate to /team/dashboard
+    then: team member count, today's attendance summary, and pending approvals count are shown
+  - id: AC-2
+    given: some members are active on Gather
+    when: the team member list renders
+    then: each row shows a Gather presence indicator (green = online, gray = offline)
+  - id: AC-3
+    given: there are pending approvals
+    when: the user clicks "Pending Approvals" card
+    then: they are navigated to /team/approvals with the right filter
+  - id: AC-4
+    given: a team member is clicked
+    when: the action fires
+    then: /team/members/:id detail panel opens with attendance + leave summary
+  - id: AC-5
+    given: no team members are assigned yet
+    when: the dashboard loads
+    then: an empty state with "No team members assigned" is shown
+boundary_cases:
+  - Large team (50+ members) is virtualized for performance
+  - Gather offline state is visible even with 0 online members
+  - Today's date spans midnight correctly per user's timezone
+error_scenarios:
+  - Dashboard API fails -> retry button, no white screen
+  - Gather polling fails -> presence column shows "?" with tooltip "Gather unreachable"
+  - Unauthorized -> redirect to role home

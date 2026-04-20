@@ -1,0 +1,76 @@
+# Seed Fixtures — Single Source of Truth for test data
+# Referenced by: global-setup.ts, backend seed script, Phase 9 Playwright tests.
+# RULE-T11: credentials MUST be read from this file (never hardcoded in global-setup.ts).
+# RULE-B3: backend seed script MUST parse this file to create DB users.
+
+users:
+  - email: employee@sample-hrm.test
+    password: Employee123!
+    role: employee
+    full_name: Test Employee
+    department: Engineering
+    position: Software Engineer
+    team_leader_email: teamleader@sample-hrm.test
+    joining_date: 2024-01-15
+    gather_email: employee@gather.sample-hrm.test
+    notion_user_id: notion_test_employee
+    basic_salary: 60000
+
+  - email: employee2@sample-hrm.test
+    password: Employee123!
+    role: employee
+    full_name: Second Employee
+    department: Engineering
+    position: Junior Developer
+    team_leader_email: teamleader@sample-hrm.test
+    joining_date: 2024-06-01
+    gather_email: employee2@gather.sample-hrm.test
+    basic_salary: 45000
+
+  - email: teamleader@sample-hrm.test
+    password: TeamLeader123!
+    role: team_leader
+    full_name: Test Team Leader
+    department: Engineering
+    position: Engineering Lead
+    joining_date: 2023-03-10
+    gather_email: teamleader@gather.sample-hrm.test
+    basic_salary: 95000
+
+  - email: admin@sample-hrm.test
+    password: Admin123!
+    role: hr_admin
+    full_name: HR Admin
+    department: Human Resources
+    position: HR Manager
+    joining_date: 2022-01-05
+    basic_salary: 110000
+
+departments:
+  - name: Engineering
+  - name: Human Resources
+  - name: Design
+  - name: Finance
+
+office_config:
+  office_start_time: "08:00"
+  office_end_time: "17:00"
+  core_hours_start: "08:00"
+  core_hours_end: "13:00"
+  grace_period_minutes: 10
+  work_days: [Mon, Tue, Wed, Thu, Fri]
+  weekend_days: [Sat, Sun]
+  alternative_shift_days: [Fri, Sat, Sun]
+
+leave_policy:
+  casual_days_per_year: 14
+  sick_days_per_year: 10
+  emergency_leave_max_days: 5
+  half_day_allowed: true
+  carry_forward_allowed: false
+
+loan_policy:
+  max_multiplier_of_basic: 3
+  max_amount_cap: 500000
+  max_repayment_installments: 12
+  min_tenure_days: 180

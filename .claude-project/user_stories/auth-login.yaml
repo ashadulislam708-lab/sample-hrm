@@ -1,0 +1,41 @@
+id: auth-login-001
+title: User logs in with email and password
+role: employee
+priority: P0
+related_pages:
+  - auth/02-login.html
+acceptance_criteria:
+  - id: AC-1
+    given: an unauthenticated user visits /login
+    when: they enter valid employee email "employee@sample-hrm.test" and password "Employee123!" and click Sign In
+    then: an httpOnly auth cookie is set and they are redirected to /employee/dashboard
+  - id: AC-2
+    given: an unauthenticated user visits /login
+    when: they enter valid team_leader credentials
+    then: they are redirected to /team/dashboard
+  - id: AC-3
+    given: an unauthenticated user visits /login
+    when: they enter valid hr_admin credentials
+    then: they are redirected to /admin/dashboard
+  - id: AC-4
+    given: the login form is rendered
+    when: the user submits without email or without password
+    then: inline validation errors are shown and no API call is made
+  - id: AC-5
+    given: an authenticated user (auth cookie present)
+    when: they directly navigate to /login
+    then: they are redirected to their role home route (guest guard)
+  - id: AC-6
+    given: user clicks "Forgot password?" link
+    when: the link is activated
+    then: they are navigated to /forgot-password
+boundary_cases:
+  - Email with upper-case letters is normalized and accepted
+  - Password contains special characters and is preserved as-is
+  - Email field trims leading/trailing whitespace
+  - Very long email (300+ chars) is rejected with a validation message
+error_scenarios:
+  - Invalid credentials -> toast "Invalid email or password", form stays mounted
+  - Account disabled (status=inactive) -> toast "Account disabled, contact HR"
+  - Server 500 -> toast "Something went wrong" and form remains usable
+  - Network offline -> retry toast with clear error text

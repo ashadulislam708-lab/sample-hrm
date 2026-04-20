@@ -1,0 +1,35 @@
+id: employee-clock-in-gather-001
+title: Employee is auto-clocked-in via Gather Town presence
+role: employee
+priority: P1
+related_pages:
+  - employee/06-attendance-main.html
+acceptance_criteria:
+  - id: AC-1
+    given: Gather integration is enabled and the employee has a gather_email mapping
+    when: the employee joins the Gather Town space and the webhook fires
+    then: an attendance record is created with source=gather and today's timestamp
+  - id: AC-2
+    given: the attendance page is loaded after auto-clock-in
+    when: the user views the Clock-In Section
+    then: the Gather connection indicator shows "Connected" and today's record is displayed with source=Gather
+  - id: AC-3
+    given: the employee is auto-clocked in after grace period
+    when: the record appears
+    then: a late-attendance request is auto-created with status=pending
+  - id: AC-4
+    given: Gather integration is disabled for the current user
+    when: they open /employee/attendance
+    then: Manual Clock-In is the primary path and Gather indicator shows "Disconnected"
+  - id: AC-5
+    given: the user has a manual clock-in today
+    when: the Gather webhook later fires
+    then: the system does NOT create a duplicate record (idempotent by date+user)
+boundary_cases:
+  - Gather event timestamp is in the future -> rejected at webhook
+  - Gather event with unknown email -> logged and ignored (no crash)
+  - Two Gather events within 10s -> only the earlier is kept
+error_scenarios:
+  - Gather API unreachable during sync -> backend logs error, user UI shows "Gather sync delayed"
+  - Webhook signature invalid -> 401, no record created
+  - Network flap -> next sync reconciles and backfills missing events

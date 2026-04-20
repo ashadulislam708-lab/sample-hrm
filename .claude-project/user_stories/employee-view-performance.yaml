@@ -1,0 +1,39 @@
+id: employee-view-performance-001
+title: Employee views their performance dashboard (goals, Notion notes, PM evals)
+role: employee
+priority: P1
+related_pages:
+  - employee/16-performance.html
+  - employee/51-goal-create-edit.html
+  - employee/52-review-detail.html
+  - employee/53-feedback-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee has assigned goals
+    when: they open /employee/performance
+    then: current goals with progress bars and update buttons are listed
+  - id: AC-2
+    given: Notion integration is connected
+    when: the Daily Notes Summary panel renders
+    then: this-week submission status and a streak counter are displayed
+  - id: AC-3
+    given: past PM evaluations exist
+    when: the user views Project Evaluations
+    then: evaluations show PM, project name, completion date, and ratings
+  - id: AC-4
+    given: the employee wants to update a goal
+    when: they click Update and input a new percentage
+    then: server updates progress and UI reflects it
+  - id: AC-5
+    given: a review cycle is open
+    when: the self-assessment card is visible
+    then: a "Complete Self-Assessment" CTA navigates to /employee/reviews/:id/self-assessment
+boundary_cases:
+  - 0 goals assigned -> empty state with message "No goals yet"
+  - 100% progress shows a "Completed" badge
+  - Notion not connected -> panel shows "Connect Notion" with a link to Profile -> Integrations
+  - Streak rolls over correctly across week boundaries (Mon reset)
+error_scenarios:
+  - Goals fetch 500 -> empty list with retry button
+  - Notion API down -> cached summary shown with "Last updated ..." label
+  - Unauthorized (403) on another user's evaluation -> redirect to own performance

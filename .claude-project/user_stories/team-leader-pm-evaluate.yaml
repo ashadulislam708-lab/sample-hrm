@@ -1,0 +1,32 @@
+id: team-leader-pm-evaluate-001
+title: Team Leader conducts PM evaluation after project completion
+role: team_leader
+priority: P1
+related_pages:
+  - team/21-team-performance.html
+  - employee/52-review-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: a project is marked complete and team_leader is assigned as PM
+    when: they open /team/performance -> Evaluate and pick a member
+    then: a rating form with 5 dimensions (Quality, Timeliness, Collaboration, Problem-solving, Communication) is shown on a 1-5 scale
+  - id: AC-2
+    given: the evaluation form is filled
+    when: submit is clicked
+    then: an evaluation record is saved and linked to the member's profile
+  - id: AC-3
+    given: the form is open
+    when: a dimension is left unset
+    then: inline validation requires a rating for each
+  - id: AC-4
+    given: prior evaluations exist
+    when: historical view is opened
+    then: past evaluations with PM, date, and average rating are listed
+boundary_cases:
+  - Rating exactly 1 or 5 accepted (boundaries inclusive)
+  - Comments up to 2000 chars accepted
+  - Editing evaluation within 7 days is allowed; after that read-only
+error_scenarios:
+  - Submit while project was re-opened -> 409, refresh
+  - Server 500 -> form preserved, retry available
+  - Unauthorized (not PM of the project) -> 403

@@ -1,0 +1,37 @@
+id: employee-apply-sick-leave-001
+title: Employee applies for a sick leave
+role: employee
+priority: P0
+related_pages:
+  - employee/09-leave-main.html
+  - employee/10-apply-leave.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/leave/apply
+    when: they select type=Sick, a date range including today, provide a reason, and submit
+    then: a leave request with type=sick is created with status=pending
+  - id: AC-2
+    given: the sick leave form is open
+    when: they attach a medical certificate file (optional)
+    then: the file is uploaded to S3 and referenced on the request
+  - id: AC-3
+    given: available sick balance is 3 days
+    when: a 2-day request is submitted
+    then: preview shows "Remaining after approval: 1 day" and the request is accepted
+  - id: AC-4
+    given: available sick balance is 0
+    when: the employee submits a sick leave
+    then: server returns 422 and UI shows "Insufficient sick leave balance"
+  - id: AC-5
+    given: a sick leave includes today's date
+    when: the request is created
+    then: the employee is marked on-leave for today and today's attendance does not flag absent
+boundary_cases:
+  - Medical-cert file size > 10MB is rejected at upload
+  - Unsupported file type (exe) is rejected
+  - Applying for backdated sick leave (yesterday) is allowed with elevated approval
+  - Consecutive sick leaves > 3 days may require a certificate flag
+error_scenarios:
+  - Upload fails -> form keeps other fields, user can re-attach
+  - Server 500 on submit -> retry button available
+  - Concurrent submit -> 409, UI refreshes

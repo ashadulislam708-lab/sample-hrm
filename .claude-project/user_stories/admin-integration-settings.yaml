@@ -1,0 +1,35 @@
+id: admin-integration-settings-001
+title: HR Admin configures Gather, Notion, and Slack integrations
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/36-integration-settings.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/integrations
+    when: they enter Gather API key and Space ID and click "Test Connection"
+    then: the system attempts a real call and shows success or failure
+  - id: AC-2
+    given: the Notion tab is open
+    when: HR enters API token and Database ID, clicks Save
+    then: settings persist and a sync can be triggered
+  - id: AC-3
+    given: the Slack tab is open
+    when: HR enters webhook URL and clicks "Send Test Message"
+    then: a message is posted to the configured channel and result is shown
+  - id: AC-4
+    given: any integration is disabled
+    when: HR toggles it off
+    then: dependent workflows (auto-attendance, daily-note sync, emergency-Slack post) skip calls and UI shows a banner
+  - id: AC-5
+    given: a Custom Module section is open
+    when: HR adds a new module with name, endpoint, and auth header
+    then: it is registered and can be included in performance aggregation
+boundary_cases:
+  - Invalid API key shows explicit error with response code
+  - Webhook URL with http:// (non-https) is rejected in production
+  - Custom-module endpoint with self-signed cert can be allowed via toggle
+error_scenarios:
+  - Network timeout during test -> friendly timeout message
+  - Secret leakage guard: UI masks tokens after save (only last 4 chars shown)
+  - Unauthorized -> 403

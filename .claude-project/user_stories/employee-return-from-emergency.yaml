@@ -1,0 +1,32 @@
+id: employee-return-from-emergency-001
+title: Employee marks "Available" on returning from emergency leave
+role: employee
+priority: P1
+related_pages:
+  - employee/09-leave-main.html
+  - employee/39-leave-request-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an emergency leave has status=approved and employee has not yet returned
+    when: they click "Mark as Returned" on the leave detail page
+    then: status becomes returned and a Slack thread reply is posted to the original message
+  - id: AC-2
+    given: an emergency leave is still pending
+    when: the user tries to mark returned
+    then: the action is disabled with tooltip "Leave not yet approved"
+  - id: AC-3
+    given: the Slack message_ts is stored from the original post
+    when: the return update is posted
+    then: it goes to the same thread (not a new message)
+  - id: AC-4
+    given: the return is marked
+    when: dashboard is reopened
+    then: the emergency-leave KPI decrements accordingly
+boundary_cases:
+  - Returning earlier than estimated return is allowed
+  - Returning later logs an overrun flag for HR
+  - Marking returned twice is idempotent (second call no-ops)
+error_scenarios:
+  - Slack thread reply fails -> status still flips; warning shown
+  - Attempt on someone else's leave -> 403
+  - Leave already returned -> 409, UI refreshes

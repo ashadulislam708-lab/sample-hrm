@@ -1,0 +1,33 @@
+id: employee-update-profile-001
+title: Employee updates their profile info and avatar
+role: employee
+priority: P2
+related_pages:
+  - employee/18-profile.html
+  - employee/54-edit-profile.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/profile
+    when: they click Edit, change phone number, and save
+    then: the profile is updated and the updated value is shown
+  - id: AC-2
+    given: the edit form is open
+    when: the employee uploads an avatar image <= 5MB
+    then: the image is stored to S3 and displayed as the profile photo
+  - id: AC-3
+    given: the form is open
+    when: the user tries to change email
+    then: the field is read-only (email change requires HR action)
+  - id: AC-4
+    given: changes are saved
+    when: the user navigates away and returns
+    then: new values persist
+boundary_cases:
+  - Phone number accepts international format (+CC-...)
+  - Avatar file > 5MB is rejected with validation message
+  - Non-image file type rejected
+  - Editing notification preferences saves instantly without full-profile save
+error_scenarios:
+  - Upload fails -> avatar reverts, toast "Upload failed"
+  - Network error -> form preserves values, retry available
+  - Unauthorized -> redirect to /login

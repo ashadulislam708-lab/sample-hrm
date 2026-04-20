@@ -1,0 +1,33 @@
+id: admin-edit-employee-001
+title: HR Admin edits an existing employee's profile and salary
+role: hr_admin
+priority: P0
+related_pages:
+  - admin/24-employee-management-list.html
+  - admin/25-employee-create-edit.html
+  - admin/44-employee-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin opens /admin/employees/:id
+    when: they click Edit, change the salary, department, or team leader, and save
+    then: the changes persist and an audit-log entry is written
+  - id: AC-2
+    given: the edit form is open
+    when: they change role from employee to team_leader
+    then: the user gains team_leader abilities on next login
+  - id: AC-3
+    given: the edit form is open
+    when: they click "Reset Password"
+    then: a new temporary password is emailed to the employee and they must change on next login
+  - id: AC-4
+    given: the user is inactive
+    when: HR Admin toggles status to active
+    then: the user can log in again
+boundary_cases:
+  - Changing team leader to someone outside the same department requires confirmation
+  - Salary change triggers a warning if it takes effect mid-payroll cycle
+  - Concurrent edit by another admin -> 409 with refresh prompt
+error_scenarios:
+  - Server 500 -> toast + form preserved
+  - Validation errors -> inline field errors
+  - Unauthorized -> 403

@@ -1,0 +1,33 @@
+id: admin-job-posting-001
+title: HR Admin creates a job posting and manages applications
+role: hr_admin
+priority: P2
+related_pages:
+  - admin/34-recruitment-management.html
+  - admin/48-job-posting-detail.html
+  - admin/47-candidate-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/recruitment
+    when: they click "Create Job", fill title, department, description, and publish
+    then: an active job posting is created and visible on the job list
+  - id: AC-2
+    given: an active job has applications
+    when: HR opens a candidate
+    then: resume, application details, and status are shown with Shortlist / Reject / Schedule Interview actions
+  - id: AC-3
+    given: HR clicks "Schedule Interview" on a candidate
+    when: they fill date/time and interviewers
+    then: a notification is sent and the candidate's status becomes interview_scheduled
+  - id: AC-4
+    given: an interview is complete and candidate is approved
+    when: HR clicks "Onboard", fills remaining employment info
+    then: a new employee record is created and candidate is marked onboarded
+boundary_cases:
+  - Closing a job prevents new applications but preserves historical list
+  - Duplicate application emails on same job are auto-merged to candidate record
+  - Resume files > 10MB rejected
+error_scenarios:
+  - Email service failure when sending interview invite -> status still updated, warning shown
+  - Onboard creates employee but email already exists -> rollback candidate state, show 409
+  - Unauthorized -> 403

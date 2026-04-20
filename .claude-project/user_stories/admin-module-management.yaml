@@ -1,0 +1,35 @@
+id: admin-module-management-001
+title: HR Admin enables / creates custom HR modules
+role: hr_admin
+priority: P2
+related_pages:
+  - admin/36-integration-settings.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on the Module Management page
+    when: they toggle a pre-built module to enabled
+    then: the module shows in the relevant role's navigation immediately (no deploy needed)
+  - id: AC-2
+    given: the page is rendered
+    when: the user clicks "Create Custom Module", fills name, placement=admin, data source=api, endpoint, metrics
+    then: a new module entry is created and enabled by default
+  - id: AC-3
+    given: a custom module uses an API data source
+    when: the module is enabled
+    then: its endpoint is called on schedule and aggregated metrics feed into performance score
+  - id: AC-4
+    given: a module is in use
+    when: HR disables it
+    then: it disappears from nav but historical data is preserved
+  - id: AC-5
+    given: a custom module is deleted
+    when: confirm is clicked
+    then: the module is soft-deleted and its data is kept for audit
+boundary_cases:
+  - Menu placement = all shows module in every role's nav (with role filters)
+  - Duplicate key (slug) rejected with validation
+  - Metrics weight outside 0..1 is rejected
+error_scenarios:
+  - Custom API endpoint unreachable -> module shows "Unavailable" badge with last-seen time
+  - Server 500 on create -> form preserved
+  - Unauthorized -> 403

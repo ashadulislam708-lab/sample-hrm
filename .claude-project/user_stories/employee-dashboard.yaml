@@ -1,0 +1,37 @@
+id: employee-dashboard-001
+title: Employee views their HRM dashboard with KPIs and quick actions
+role: employee
+priority: P0
+related_pages:
+  - employee/05-employee-dashboard.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is authenticated
+    when: they navigate to /employee/dashboard
+    then: four KPI cards render — Leave Balance, Attendance This Month, Pending Requests, Active Loan
+  - id: AC-2
+    given: the dashboard is rendered
+    when: the user views the Quick Actions area
+    then: buttons for Clock-In, Apply Leave, Apply Emergency Leave (highlighted), View Payslip are visible and functional
+  - id: AC-3
+    given: the dashboard is rendered
+    when: the user views the Recent Activity panel
+    then: recent leave requests with status, recent attendance rows, and Gather log are displayed (or empty state)
+  - id: AC-4
+    given: the dashboard is rendered
+    when: unread notifications exist
+    then: a notification bell badge shows the unread count
+  - id: AC-5
+    given: the KPI data is still loading
+    when: the dashboard first paints
+    then: skeleton placeholders are shown in each card (not blank 0s)
+boundary_cases:
+  - New employee with zero historical data shows empty states, not errors
+  - Employee with 0 leave balance shows "0" and disables Apply Leave button with tooltip
+  - Employee already clocked-in today sees a "Clocked in at HH:MM" state instead of Clock-In button
+  - Very large pending-requests count (100+) shows "99+" badge cap
+error_scenarios:
+  - Dashboard API fails -> toast + retry button, no white screen
+  - Unauthorized (401) -> redirect to /login
+  - Forbidden (403) — role mismatch -> redirect to role home
+  - Slow network (>5s) -> skeleton remains, then content swap, no flash of unstyled content

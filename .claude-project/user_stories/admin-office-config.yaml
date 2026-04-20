@@ -1,0 +1,35 @@
+id: admin-office-config-001
+title: HR Admin updates office hours and work days
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/37-office-configuration.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/office-configuration
+    when: they change office start time to 09:00 and grace to 15 minutes and save
+    then: settings persist and subsequent clock-ins compute late status against the new threshold
+  - id: AC-2
+    given: the page is rendered
+    when: the user clicks "Reset to Defaults"
+    then: a confirm dialog appears; after confirm, values revert to PRD defaults
+  - id: AC-3
+    given: the page is rendered
+    when: the user clicks "View Change History"
+    then: an audit list of who changed what and when is shown
+  - id: AC-4
+    given: core hours overlap is invalid (end <= start)
+    when: user tries to save
+    then: validation blocks with a descriptive error
+  - id: AC-5
+    given: office days exclude all days
+    when: the user tries to save with zero work days
+    then: validation requires at least one work day
+boundary_cases:
+  - Grace period = 0 accepted (no grace)
+  - Grace period > 60 min rejected with warning
+  - Alternative shift days can overlap with work days (e.g., Friday)
+error_scenarios:
+  - Concurrent update -> 409 "Office config changed, please refresh"
+  - Server 500 -> form preserved, retry available
+  - Unauthorized -> 403

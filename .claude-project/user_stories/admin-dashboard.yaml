@@ -1,0 +1,35 @@
+id: admin-dashboard-001
+title: HR Admin views global HRM dashboard with KPIs and charts
+role: hr_admin
+priority: P0
+related_pages:
+  - admin/23-admin-dashboard.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is authenticated
+    when: they navigate to /admin/dashboard
+    then: KPI cards show Total Employees, Today's Attendance (Gather + Manual), Pending Approvals, Active Loans, This Month Payroll, Active Emergency Leaves
+  - id: AC-2
+    given: the dashboard is rendered
+    when: the Period Filter is set to "Last 7 days"
+    then: all charts and KPIs recompute for that window
+  - id: AC-3
+    given: the dashboard is rendered
+    when: the user views the charts area
+    then: Attendance Trend (line), Leave Utilization (pie), Department Headcount (bar), and Attendance Source breakdown are all visible
+  - id: AC-4
+    given: the activity feed panel is visible
+    when: it loads
+    then: recent leave, emergency, late, and loan events are listed with timestamps
+  - id: AC-5
+    given: a custom date range is selected
+    when: Apply is clicked
+    then: data refetches and URL search params persist the filter
+boundary_cases:
+  - 0 employees shows "No employees yet" across KPIs without crashing
+  - Very long department names in the bar chart are rotated 45 degrees or truncated
+  - Date range spanning year boundary supported
+error_scenarios:
+  - Any chart fails to load -> card shows "Data unavailable, retry" without affecting other charts
+  - Unauthorized -> redirect to /login
+  - Forbidden (non-admin) -> redirect to role home

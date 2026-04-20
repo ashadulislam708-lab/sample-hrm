@@ -1,0 +1,32 @@
+id: team-leader-approve-late-attendance-001
+title: Team Leader approves or rejects a late-attendance request
+role: team_leader
+priority: P1
+related_pages:
+  - team/20-team-approvals.html
+  - team/43-approval-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: a team_leader views /team/approvals with filter=LateAttendance
+    when: they approve a request with optional note
+    then: status becomes approved and employee's attendance record updates
+  - id: AC-2
+    given: the late-attendance list is rendered
+    when: a request is pending more than 48 hours
+    then: an "Aging" tag is shown on the row
+  - id: AC-3
+    given: the approver rejects a late request
+    when: reject is submitted with a reason
+    then: attendance record retains late flag and request is marked rejected
+  - id: AC-4
+    given: the team_leader selects multiple rows
+    when: bulk approve is triggered
+    then: all selected requests are approved atomically (or none if any fails)
+boundary_cases:
+  - Date older than 30 days is restricted to HR Admin only
+  - Request for team_leader's own late attendance is hidden (self-review blocked)
+  - Bulk action with mixed team ownership rejects rows outside own team
+error_scenarios:
+  - 409 on concurrent decision -> row refreshes
+  - Server 500 -> toast + retry
+  - Unauthorized -> 403 and row hidden

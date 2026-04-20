@@ -1,0 +1,6 @@
+gate: frontend
+executed_at: 2026-04-20T17:36:28Z
+score: .93
+passed: 29/31
+checks_hash: 55065240b5ed056963f472a94bf9c8d5170dda78ddaafb3ce1ade672d14dffe9
+runner_pid: 156241

@@ -1,0 +1,37 @@
+id: employee-apply-casual-leave-001
+title: Employee applies for a casual leave
+role: employee
+priority: P0
+related_pages:
+  - employee/09-leave-main.html
+  - employee/10-apply-leave.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee is on /employee/leave
+    when: they click "Apply Leave", select type=Casual, duration=Full Day, pick a future date, enter reason, and submit
+    then: a leave request is created with status=pending and appears at top of the leave history list
+  - id: AC-2
+    given: the form is open
+    when: the employee selects a date range (start, end)
+    then: total days count is displayed and leave balance is decremented for the preview
+  - id: AC-3
+    given: the employee has 0 casual leave balance remaining
+    when: they try to apply for casual leave
+    then: server rejects (422), UI shows "Insufficient casual leave balance"
+  - id: AC-4
+    given: a request is pending
+    when: the employee clicks Cancel on the request
+    then: status becomes cancelled
+  - id: AC-5
+    given: a request was approved
+    when: the employee attempts to cancel before 24h of start date
+    then: cancellation is allowed per policy
+boundary_cases:
+  - Applying for a single day where start=end is accepted
+  - Applying for a past date is rejected with message
+  - Overlapping with an existing approved leave is rejected
+  - Reason at 1000 chars accepted
+error_scenarios:
+  - Network failure mid-submit -> form preserved, retry available
+  - Server 422 with field errors -> inline field errors shown
+  - Session expired mid-flow -> re-auth then form restored

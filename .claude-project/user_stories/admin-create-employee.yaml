@@ -1,0 +1,38 @@
+id: admin-create-employee-001
+title: HR Admin creates a new employee with integration mappings
+role: hr_admin
+priority: P0
+related_pages:
+  - admin/24-employee-management-list.html
+  - admin/25-employee-create-edit.html
+  - admin/44-employee-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/employees
+    when: they click "Create Employee", fill all required fields, set role=employee, assign team leader, and save
+    then: a new user is created and appears at top of the employee list
+  - id: AC-2
+    given: the create form is open
+    when: they upload a profile photo
+    then: the image is stored in S3 and displayed in the preview
+  - id: AC-3
+    given: the create form is open
+    when: an email that already exists is entered
+    then: server returns 409 "Email already in use" and inline error is shown
+  - id: AC-4
+    given: the create form is open
+    when: they enter Gather email and Notion user id
+    then: those mappings are saved and integration status can sync with them
+  - id: AC-5
+    given: an employee has been created
+    when: HR Admin opens the detail drawer
+    then: Employment details, Salary info, Leave balance, Quick stats, Integration status, and Actions are shown
+boundary_cases:
+  - Salary = 0 is rejected with "Must be > 0"
+  - Joining date in the future is allowed (pre-onboarding)
+  - Missing Gather/Notion is allowed but flagged as "not mapped"
+  - Department is required; must match an existing dept or allow new-dept creation in same flow
+error_scenarios:
+  - Server 500 on save -> toast + form preserved
+  - Weak password -> validation prevents submission
+  - Unauthorized -> 403 and redirect

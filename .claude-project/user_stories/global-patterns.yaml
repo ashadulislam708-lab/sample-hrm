@@ -1,0 +1,80 @@
+# Global Boundary & Error Patterns — reused across all stories
+# RULE-T7: add patterns here when fixing bugs to prevent recurrence.
+
+boundary_cases:
+  - id: BC-G1
+    name: Empty data list
+    description: Backend returns zero rows; UI MUST render empty-state component (not a blank table).
+  - id: BC-G2
+    name: Loading state
+    description: While awaiting API response, UI MUST show skeleton or spinner (not undefined/blank).
+  - id: BC-G3
+    name: Pagination boundaries
+    description: Page 1 has no "previous"; last page has no "next"; 0-result search shows empty state.
+  - id: BC-G4
+    name: Date-range edge cases
+    description: Same start and end date is valid; end < start is rejected with validation message.
+  - id: BC-G5
+    name: Long text overflow
+    description: Names/reasons exceeding 255 chars must truncate in tables with tooltip, never break layout.
+  - id: BC-G6
+    name: Concurrent edit
+    description: Two users edit same record; 2nd save receives 409 Conflict with message.
+  - id: BC-G7
+    name: Timezone handling
+    description: Clock-in times are stored UTC, displayed in user's locale; day boundary handled correctly.
+  - id: BC-G8
+    name: Soft-deleted record access
+    description: Accessing deleted resource by id returns 404, not stale data.
+  - id: BC-G9
+    name: Mobile viewport (375px)
+    description: Tables become stacked cards; no horizontal scroll; menus collapse to drawer.
+  - id: BC-G10
+    name: Keyboard-only navigation
+    description: All interactive elements reachable via Tab; focus ring visible; Esc closes modals.
+
+error_scenarios:
+  - id: ES-G1
+    name: Session expired (401)
+    description: Access token expired; interceptor calls /auth/refresh once; on refresh failure, redirect to /login.
+  - id: ES-G2
+    name: Forbidden (403)
+    description: User lacks role to access route; UI shows 403 page or toast, never silent failure.
+  - id: ES-G3
+    name: Resource not found (404)
+    description: Deep-link to non-existent id returns 404; UI shows NotFound page.
+  - id: ES-G4
+    name: Validation error (422/400)
+    description: Server rejects payload; UI attaches field errors from response.data.errors to form.
+  - id: ES-G5
+    name: Network failure
+    description: API request times out or network error; UI shows toast with retry button.
+  - id: ES-G6
+    name: Server error (500)
+    description: Unexpected backend error; UI shows generic message "Something went wrong", keeps form state.
+  - id: ES-G7
+    name: Rate limit (429)
+    description: Too many requests; UI disables submit briefly, shows retry-after message.
+  - id: ES-G8
+    name: Integration failure (Gather/Notion/Slack)
+    description: External integration unavailable; UI shows warning but core action still succeeds.
+  - id: ES-G9
+    name: Stale auth cookie
+    description: Cookie deleted or corrupted; UI treats as logged-out, redirects to /login.
+  - id: ES-G10
+    name: XSS reflection
+    description: HTML submitted in text inputs MUST NOT render as HTML (escaped everywhere).
+
+cross_cutting_ac:
+  - id: AC-CC-1
+    given: an interactive control is rendered
+    when: the user inspects it
+    then: it carries a data-testid attribute (RULE-F10)
+  - id: AC-CC-2
+    given: user is on any page
+    when: resizing viewport to 375px
+    then: no horizontal scroll appears and menus collapse appropriately
+  - id: AC-CC-3
+    given: user is authenticated with role R
+    when: they access a route requiring role R'
+    then: they are redirected to their role's home or a 403 page (never shown the guarded content)

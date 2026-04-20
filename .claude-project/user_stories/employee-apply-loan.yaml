@@ -1,0 +1,38 @@
+id: employee-apply-loan-001
+title: Employee applies for a salary loan
+role: employee
+priority: P1
+related_pages:
+  - employee/14-loans-main.html
+  - employee/15-apply-loan.html
+  - employee/40-loan-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee has no active loan and has completed probation
+    when: they open /employee/loans/apply, enter amount within policy, reason, preferred installments, and submit
+    then: a loan application with status=pending is created
+  - id: AC-2
+    given: the form is open
+    when: amount exceeds 3x monthly basic or cap
+    then: inline validation blocks submission with message referencing policy
+  - id: AC-3
+    given: an active loan already exists
+    when: the employee visits the apply page
+    then: they are redirected to /employee/loans with "You already have an active loan" banner
+  - id: AC-4
+    given: the employee has < 6 months tenure
+    when: they try to apply
+    then: server rejects with 422 "Loan available after probation period"
+  - id: AC-5
+    given: a loan is approved by HR
+    when: the detail page loads
+    then: repayment schedule (monthly installments) is rendered
+boundary_cases:
+  - Amount exactly at cap is accepted
+  - Installments exactly at max is accepted
+  - Amount with decimal (e.g., 10000.50) is accepted to 2 decimal places
+  - Reason at 1000 chars accepted
+error_scenarios:
+  - Server 422 on amount/installments -> inline field errors
+  - Network failure -> retry keeps form state
+  - Concurrent duplicate submit -> 409 with friendly message

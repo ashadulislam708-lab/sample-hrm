@@ -1,0 +1,32 @@
+id: employee-policy-acknowledge-001
+title: Employee reads and acknowledges a company policy
+role: employee
+priority: P2
+related_pages:
+  - employee/17-policies.html
+  - employee/50-policy-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an employee has not acknowledged a policy requiring acknowledgment
+    when: they open /employee/policies and click the policy
+    then: the policy detail is shown and an "Acknowledge" button is visible
+  - id: AC-2
+    given: the policy detail is open
+    when: the employee clicks Acknowledge
+    then: an acknowledgment record is saved and the button changes to "Acknowledged on YYYY-MM-DD"
+  - id: AC-3
+    given: the policy list is shown
+    when: filter=Unacknowledged is applied
+    then: only policies without an acknowledgment are displayed
+  - id: AC-4
+    given: the employee previously acknowledged the policy
+    when: they reopen it
+    then: the Acknowledge button is hidden and acknowledgment date is shown
+boundary_cases:
+  - 0 policies shows empty state
+  - Search by keyword filters by title and content
+  - Very long policy text (scrolls) supports keyboard navigation
+error_scenarios:
+  - Ack fails -> toast + button remains clickable
+  - Policy archived after page load -> next ack attempt shows "Policy no longer active"
+  - Unauthorized -> redirect to /login

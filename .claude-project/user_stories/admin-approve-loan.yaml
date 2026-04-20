@@ -1,0 +1,36 @@
+id: admin-approve-loan-001
+title: HR Admin approves or rejects a loan application
+role: hr_admin
+priority: P1
+related_pages:
+  - admin/32-loan-management.html
+  - admin/46-loan-detail.html
+acceptance_criteria:
+  - id: AC-1
+    given: an hr_admin is on /admin/loans with a pending application
+    when: they open it, set installments, and click Approve
+    then: status becomes approved, a repayment schedule is created, and the employee is notified
+  - id: AC-2
+    given: the loan detail is open
+    when: HR clicks Reject with a reason
+    then: status becomes rejected and the employee is notified
+  - id: AC-3
+    given: the approve dialog is open
+    when: HR picks installments within policy range (1..max)
+    then: preview shows monthly amount
+  - id: AC-4
+    given: an active loan exists for an employee
+    when: HR opens the Active Loans tab
+    then: outstanding balance, monthly installment, and remaining installments are shown
+  - id: AC-5
+    given: installments exceed policy max
+    when: approve is attempted
+    then: validation blocks and shows policy message
+boundary_cases:
+  - Exactly max installments accepted
+  - Employee tenure exactly at probation threshold (6 months) is eligible
+  - Amount just below cap accepted; at cap inclusive
+error_scenarios:
+  - Duplicate approval attempt -> 409
+  - Server 500 -> dialog preserves inputs
+  - Unauthorized -> 403
