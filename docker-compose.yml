@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hrm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-hrm}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hrm_dev_password}
+      POSTGRES_DB: ${DB_NAME:-sample_hrm}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-hrm}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: hrm-redis
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis_data:/data
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: hrm-mailhog
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  postgres_data:
+  redis_data:
